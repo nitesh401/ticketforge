@@ -12,7 +12,31 @@ The goal is educational: make the underlying distributed-systems problems *visib
 ---
 
 ## Contents
-1. [Problem statement](#1-problem-statement) · 2. [Why double booking happens](#2-why-double-booking-happens) · 3. [Race condition](#3-the-race-condition) · 4. [Movie architecture](#4-bookmyshow-style-architecture) · 5. [Tatkal architecture](#5-tatkal-style-architecture) · 6. [Component diagram](#6-component-diagram) · 7. [Sequence diagrams](#7-sequence-diagrams) · 8. [Schema](#8-database-schema) · 9-12. [Concurrency strategy](#9-concurrency-strategy) · 13. [Redis](#13-redis-distributed-locking) · 14. [Hold expiration](#14-hold-expiration) · 15. [Payment race](#15-payment-race-condition) · 16. [Idempotency](#16-idempotency) · 17. [Kafka](#17-kafka-events) · 18. [Scaling](#18-scaling-strategy) · 19. [Failures](#19-failure-scenarios) · 20. [CAP](#20-capconsistency-discussion) · 21. [Monitoring](#21-monitoring) · 22. [Security](#22-security) · 23. [Performance](#23-performance-considerations) · 24. [Testing](#24-testing-strategy) · 25. [Trade-offs](#25-trade-offs) · [Run it](#run-it) · [What this project teaches](#what-this-project-teaches) · [Interview questions](#interview-questions-demonstrated)
+1. [Problem statement](#1-problem-statement)  
+2. [Why double booking happens](#2-why-double-booking-happens) 
+3. [Race condition](#3-the-race-condition) 
+4. [Movie architecture](#4-bookmyshow-style-architecture) 
+5. [Tatkal architecture](#5-tatkal-style-architecture) 
+6. [Component diagram](#6-component-diagram) 
+7. [Sequence diagrams](#7-sequence-diagrams) 
+8. [Schema](#8-database-schema) 
+9-12. [Concurrency strategy](#9-concurrency-strategy) 
+13. [Redis](#13-redis-distributed-locking) 
+14. [Hold expiration](#14-hold-expiration) 
+15. [Payment race](#15-payment-race-condition) 
+16. [Idempotency](#16-idempotency) 
+17. [Kafka](#17-kafka-events) 
+18. [Scaling](#18-scaling-strategy) 
+19. [Failures](#19-failure-scenarios) 
+20. [CAP](#20-capconsistency-discussion) 
+21. [Monitoring](#21-monitoring) 
+22. [Security](#22-security) 
+23. [Performance](#23-performance-considerations) 
+24. [Testing](#24-testing-strategy) 
+25. [Trade-offs](#25-trade-offs) 
+[Run it](#run-it) 
+[What this project teaches](#what-this-project-teaches) 
+[Interview questions](#interview-questions-demonstrated)
 
 ---
 
@@ -547,8 +571,13 @@ git push -u origin main
 
 ## Documentation
 
-[docs/architecture.md](docs/architecture.md) · [docs/concurrency.md](docs/concurrency.md) · [docs/database.md](docs/database.md) · [docs/failure-scenarios.md](docs/failure-scenarios.md) · [docs/performance.md](docs/performance.md) · [docs/interview-guide.md](docs/interview-guide.md)
+[docs/architecture.md](docs/architecture.md) 
+[docs/concurrency.md](docs/concurrency.md) 
+[docs/database.md](docs/database.md) 
+[docs/failure-scenarios.md](docs/failure-scenarios.md) 
+[docs/performance.md](docs/performance.md) 
+[docs/interview-guide.md](docs/interview-guide.md)
 
 ## License
 
-MIT
+UNLICENSE
