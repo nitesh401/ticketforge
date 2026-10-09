@@ -172,19 +172,19 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     autonumber
-    participant U as 10,000 users
-    participant WR as Waiting room (optional)
-    participant S as Booking Service x N
+    participant U as Users
+    participant WR as Waiting Room
+    participant S as Booking Service Instances
     participant DB as PostgreSQL
-    U->>WR: join queue
-    WR->>S: admit N per second
-    S->>DB: BEGIN; claim Idempotency-Key
-    S->>DB: UPDATE quota SET available = available - n WHERE available >= n
+    U->>WR: 10k users join queue
+    WR->>S: Admit N requests per second
+    S->>DB: Begin transaction and claim idempotency key
+    S->>DB: Decrement quota if enough inventory remains
     alt rows = 1
-        S->>DB: read remaining, insert booking + passengers (berth range)
+        S->>DB: Read remaining quota and insert booking with berth assignments
         S->>DB: COMMIT
         S-->>U: 201 confirmed
-    else rows = 0
+    else inventory insufficient
         S->>DB: ROLLBACK
         S-->>U: 409 INSUFFICIENT_INVENTORY
     end
