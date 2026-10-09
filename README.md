@@ -20,7 +20,7 @@ The goal is educational: make the underlying distributed-systems problems *visib
 6. [Component diagram](#6-component-diagram) 
 7. [Sequence diagrams](#7-sequence-diagrams) 
 8. [Schema](#8-database-schema) 
-9-12. [Concurrency strategy](#9-concurrency-strategy) 
+9. [Concurrency strategy](#9#10#11#12-concurrency-strategy) 
 13. [Redis](#13-redis-distributed-locking) 
 14. [Hold expiration](#14-hold-expiration) 
 15. [Payment race](#15-payment-race-condition) 
