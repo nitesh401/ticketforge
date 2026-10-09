@@ -12,7 +12,36 @@ The goal is educational: make the underlying distributed-systems problems *visib
 ---
 
 ## Contents
-1. [Problem statement](#1-problem-statement) · 2. [Why double booking happens](#2-why-double-booking-happens) · 3. [Race condition](#3-the-race-condition) · 4. [Movie architecture](#4-bookmyshow-style-architecture) · 5. [Tatkal architecture](#5-tatkal-style-architecture) · 6. [Component diagram](#6-component-diagram) · 7. [Sequence diagrams](#7-sequence-diagrams) · 8. [Schema](#8-database-schema) · 9-12. [Concurrency strategy](#9-concurrency-strategy) · 13. [Redis](#13-redis-distributed-locking) · 14. [Hold expiration](#14-hold-expiration) · 15. [Payment race](#15-payment-race-condition) · 16. [Idempotency](#16-idempotency) · 17. [Kafka](#17-kafka-events) · 18. [Scaling](#18-scaling-strategy) · 19. [Failures](#19-failure-scenarios) · 20. [CAP](#20-capconsistency-discussion) · 21. [Monitoring](#21-monitoring) · 22. [Security](#22-security) · 23. [Performance](#23-performance-considerations) · 24. [Testing](#24-testing-strategy) · 25. [Trade-offs](#25-trade-offs) · [Run it](#run-it) · [What this project teaches](#what-this-project-teaches) · [Interview questions](#interview-questions-demonstrated)
+- [1. Problem statement](#1-problem-statement)
+- [2. Why double booking happens](#2-why-double-booking-happens)
+- [3. The race condition](#3-the-race-condition)
+- [4. BookMyShow-style architecture](#4-bookmyshow-style-architecture)
+- [5. Tatkal-style architecture](#5-tatkal-style-architecture)
+- [6. Component diagram](#6-component-diagram)
+- [7. Sequence diagrams](#7-sequence-diagrams)
+- [8. Database schema](#8-database-schema)
+- [9. Concurrency strategy](#9-concurrency-strategy)
+- [10. Pessimistic locking](#10-pessimistic-locking-pessimisticseatacquisition)
+- [11. Optimistic locking](#11-optimistic-locking)
+- [12. Atomic SQL updates](#12-atomic-sql-updates-atomicseatacquisition)
+- [13. Redis distributed locking](#13-redis-distributed-locking)
+- [14. Hold expiration](#14-hold-expiration)
+- [15. Payment race condition](#15-payment-race-condition)
+- [16. Idempotency](#16-idempotency)
+- [17. Kafka events](#17-kafka-events)
+- [18. Scaling strategy](#18-scaling-strategy)
+- [19. Failure scenarios](#19-failure-scenarios)
+- [20. CAP/consistency discussion](#20-capconsistency-discussion)
+- [21. Monitoring](#21-monitoring)
+- [22. Security](#22-security)
+- [23. Performance considerations](#23-performance-considerations)
+- [24. Testing strategy](#24-testing-strategy)
+- [25. Trade-offs](#25-trade-offs)
+- [Run it](#run-it)
+- [What this project teaches](#what-this-project-teaches)
+- [Interview questions](#interview-questions-demonstrated)
+- [Documentation](#documentation)
+- [License](#license)
 
 ---
 
@@ -101,7 +130,7 @@ flowchart TD
     GW --> B1[Booking Service instance 1]
     GW --> B2[Booking Service instance 2]
     GW --> BN[... instance N]
-    subgraph Shared state
+    subgraph SHARED["Shared state"]
       R[(Redis<br/>temporary hold keys<br/>optional fast-path)]
       P[(PostgreSQL<br/>authoritative seats,<br/>inventory, bookings,<br/>idempotency keys)]
       K{{Kafka<br/>booking / payment /<br/>seat / notification events}}
@@ -260,7 +289,7 @@ Full DDL is in `src/main/resources/db/migration`; every index and constraint is 
 
 Both users can **see** `AVAILABLE`. Only one can **change** the authoritative state. That distinction is fundamental.
 
-### 10. Pessimistic locking (`PessimisticSeatAcquisition`)
+## 10. Pessimistic locking (`PessimisticSeatAcquisition`)
 
 ```java
 @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -272,11 +301,11 @@ Lock all requested rows in id order, check each is acquirable, then mutate. A co
 
 **Why ordering matters.** User A asks `A1,A2`, User B asks `A2,A1`. Without a global order, A locks A1 and B locks A2, then each waits for the other: deadlock. Sorting by id gives everyone the same acquisition order, so waiting graphs cannot form cycles. (`SeatContentionIT` hammers this with opposite-order requests.)
 
-### 11. Optimistic locking
+## 11. Optimistic locking
 
 `ShowSeat`, `Hold`, `Booking`, `Payment` carry a `@Version`. A stale write fails with `OptimisticLockException` instead of silently overwriting. It is the right tool when conflicts are *rare* (editing a booking). For the hottest paths (seat acquisition, Tatkal counter) we use the cheaper and stronger atomic UPDATE below, because under heavy contention optimistic retries waste work.
 
-### 12. Atomic SQL updates (`AtomicSeatAcquisition`)
+## 12. Atomic SQL updates (`AtomicSeatAcquisition`)
 
 ```java
 @Modifying
